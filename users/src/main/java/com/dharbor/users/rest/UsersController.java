@@ -1,8 +1,12 @@
 package com.dharbor.users.rest;
 
+import com.dharbor.users.exceptions.UserNotFoundException;
 import com.dharbor.users.model.User;
 import com.dharbor.users.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +26,17 @@ public class UsersController {
     }
 
     @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable UUID id) {
-        return this.usersService.findById(id);
+    public ResponseEntity<?> getUserById(@PathVariable UUID id) {
+
+        try {
+            User user = this.usersService.findById(id);
+
+            return ResponseEntity.ok(user);
+
+        } catch (UserNotFoundException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+
     }
 
     @PostMapping("/users")

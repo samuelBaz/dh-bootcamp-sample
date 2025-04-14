@@ -1,6 +1,8 @@
 package com.dharbor.users.services;
 
+import com.dharbor.users.exceptions.UserNotFoundException;
 import com.dharbor.users.model.User;
+import com.dharbor.users.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
@@ -9,18 +11,14 @@ import java.util.*;
 @Component
 public class UsersService {
 
-    private Map<UUID, User> store;
+    private final UserRepository userRepository;
 
-    @PostConstruct()
-    public void initStore() {
-        this.store = new HashMap<>();
+    public UsersService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public User create(User user) {
-        user.setId(UUID.randomUUID());
-        this.store.put(user.getId(), user);
-
-        return user;
+        return this.userRepository.create(user);
     }
 
     public Collection<User> bulkCreate(Collection<User> users) {
@@ -34,11 +32,17 @@ public class UsersService {
     }
 
     public Collection<User> getAll() {
-        return this.store.values();
+        return this.userRepository.getAll();
     }
 
-    public User findById(UUID id) {
-        return this.store.get(id);
+    public User findById(UUID id) throws UserNotFoundException {
+        Optional<User> userOptional = this.userRepository.findById(id);
+
+        if(userOptional.isPresent()) {
+            return userOptional.get();
+        }
+
+        throw new UserNotFoundException("User not found for id "+id);
     }
 
 }

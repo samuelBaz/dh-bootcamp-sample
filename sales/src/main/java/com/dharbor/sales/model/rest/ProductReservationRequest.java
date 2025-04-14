@@ -1,17 +1,12 @@
-package com.dharbor.sales.model.dto;
-
+package com.dharbor.sales.model.rest;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
-public class NewSaleDto {
+public class ProductReservationRequest {
 
-    private UUID userId;
     private String productId;
     private Integer quantity;
-
 }
